@@ -1,0 +1,35 @@
+0 0 * * * ~/server_issue/server_api/timer_bash/daily_update_24.sh
+
+0 20 * * * ~/server_issue/server_api/timer_bash/daily_update_20.sh
+
+0 18 * * * ~/server_issue/server_api/timer_bash/daily_update_18.sh
+
+0 12 * * * ~/server_issue/server_api/timer_bash/daily_update_12.sh
+
+
+#30 14 * * * ~/server_issue/server_api/timer_bash/daily_update_14_30.sh
+
+#30 19 * * * ~/server_issue/server_api/timer_bash/daily_update_19_30.sh
+
+0 0 1 * * ~/server_issue/server_api/timer_bash/monthly_update.sh
+
+30 0 1 * * bash ~/server_issue/server_api/timer_bash/monthly_get_charge_info.sh
+
+*/5 * * * * ~/server_issue/server_api/php_stat/crontab_sh/stat.sh >> ~/server_issue/server_api/php_stat/crontab_sh/fivestat_log
+
+30 23 * * * ~/server_issue/server_api/php_stat/crontab_sh/daily_stat.sh >> ~/server_issue/server_api/php_stat/crontab_sh/dailystat_log
+
+30 23 * * 0 ~/server_issue/server_api/php_stat/crontab_sh/weekly_stat.sh >> ~/server_issue/server_api/php_stat/crontab_sh/weeklystat_log
+
+30 23 * * * ~/server_issue/server_api/php_stat/crontab_sh/monthly_stat.sh >> ~/server_issue/server_api/php_stat/crontab_sh/monthlystat_log
+
+*/1 * * * * ~/server_issue/server_api/php_stat/crontab_sh/collect_log.sh
+
+#0 */4 * * * ~/server_issue/server_api/DBSvr/bin/mysql_back.sh
+
+
+40 23 * * * find server_issue/server_api/DBSvr/log/ -type f -ctime +2  -exec zip -m -9 -q /backup/`whoami`/{}.zip {} \;
+
+50 23 * * * find server_issue/server_api/battle_server/log/ -type f -ctime +4 -exec zip -m -9 -q /backup/`whoami`/{}.zip {} \;
+
+

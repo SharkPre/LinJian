@@ -1,0 +1,8 @@
+| id                      | int(10) unsigned    | NO   | PRI | NULL    | auto_increment |
+| world_challenge_idx     | int(10) unsigned    | NO   |     | 0       |                |
+| uid                     | int(10) unsigned    | NO   | MUL | 0       |                |
+| today_left_count        | tinyint(3) unsigned | NO   |     | 10      |                |
+| attack_cd_complete_time | int(10) unsigned    | NO   |     | 0       |                |
+| today_buy_count         | int(10) unsigned    | NO   |     | 0       |                |
+| refresh_targets_time    | int(10) unsigned    | NO   |     | 0       |                |
+

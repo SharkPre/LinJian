@@ -1,27 +1,27 @@
 /*
-	�����̽��յ� SIGINT/SIGKILL/SIGTERM ʱ�����øú������Դ�ӡ���̽���ǰ�Ķ�ջ��Ϣ 
+	当进程接收到 SIGINT/SIGKILL/SIGTERM 时，调用该函数可以打印进程结束前的堆栈信息 
 */
 void print_trace(void)
 {
 	int i;   
-	const int MAX_CALLSTACK_DEPTH = 32;    /* ��Ҫ��ӡ��ջ�������� */  
-	void *traceback[MAX_CALLSTACK_DEPTH];  /* �����洢���ö�ջ�еĵ�ַ */  
-	/* ���� addr2line ������Դ�ӡ��һ��������ַ���ڵ�Դ����λ��   
-	* ���ø�ʽΪ�� addr2line -f -e /tmp/a.out 0x400618  
-	* ʹ��ǰ��Դ�������ʱҪ���� -rdynamic -g ѡ��  
+	const int MAX_CALLSTACK_DEPTH = 32;    /* 需要打印堆栈的最大深度 */  
+	void *traceback[MAX_CALLSTACK_DEPTH];  /* 用来存储调用堆栈中的地址 */  
+	/* 利用 addr2line 命令可以打印出一个函数地址所在的源代码位置   
+	* 调用格式为： addr2line -f -e /tmp/a.out 0x400618  
+	* 使用前，源代码编译时要加上 -rdynamic -g 选项  
 	*/  
 	char cmd[512] = "addr2line -f -e ";   
 	char *prog = cmd + strlen(cmd);   
-	/* �õ���ǰ��ִ�г����·�����ļ��� */  
+	/* 得到当前可执行程序的路径和文件名 */  
 	int r = readlink("/proc/self/exe",prog,sizeof(cmd)-(prog-cmd)-1);   
-	/* popen��fork��һ���ӽ���������/bin/sh, ��ִ��cmd�ַ����е����  
-	* ͬʱ���ᴴ��һ���ܵ������ڲ�����'w', �ܵ������׼���������ӣ�  
-	* ������һ��FILE��ָ��fpָ���������Ĺܵ����Ժ�ֻҪ��fp��������д�κ����ݣ�  
-	* ���ݶ��ᱻ��������׼���룬  
-	* ������Ĵ����У��Ὣ���ö�ջ�еĺ�����ַд��ܵ��У�  
-	* addr2line�����ӱ�׼�����еõ��ú�����ַ��Ȼ����ݵ�ַ��ӡ��Դ����λ�úͺ�������  
+	/* popen会fork出一个子进程来调用/bin/sh, 并执行cmd字符串中的命令，  
+	* 同时，会创建一个管道，由于参数是'w', 管道将与标准输入相连接，  
+	* 并返回一个FILE的指针fp指向所创建的管道，以后只要用fp往管理里写任何内容，  
+	* 内容都会被送往到标准输入，  
+	* 在下面的代码中，会将调用堆栈中的函数地址写入管道中，  
+	* addr2line程序会从标准输入中得到该函数地址，然后根据地址打印出源代码位置和函数名。  
 	*/  
-	/* �õ���ǰ���ö�ջ�е����к�����ַ���ŵ�traceback������ */  
+	/* 得到当前调用堆栈中的所有函数地址，放到traceback数组中 */  
 	int depth = backtrace(traceback, MAX_CALLSTACK_DEPTH);
 	char **strings;
 	strings = backtrace_symbols (traceback, depth);
@@ -32,9 +32,23 @@ void print_trace(void)
 		{
 			GT_INFO("%s", strings[i]);
 		}
-		///* �õ����ö�ջ�еĺ����ĵ�ַ��Ȼ�󽫵�ַ���͸� addr2line */  
+		///* 得到调用堆栈中的函数的地址，然后将地址发送给 addr2line */  
 		//printf("%p\n", traceback[i]);   
-		///* addr2line �������յ���ַ�󣬻Ὣ������ַ���ڵ�Դ����λ�ô�ӡ����׼��� */  
+		///* addr2line 命令在收到地址后，会将函数地址所在的源代码位置打印到标准输出 */  
 	} 
 	GT_INFO("-------------------------------[end]");
 }
+
+
+/*
+ set core dump
+**/
+struct rlimit limit;
+limit.rlim_cur = 200000000;
+limit.rlim_max = 200000000;
+
+if ( setrlimit( RLIMIT_CORE, &limit ) )
+{
+	printf("set limit failed.\n");
+}
+

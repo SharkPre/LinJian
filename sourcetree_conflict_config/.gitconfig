@@ -1,0 +1,15 @@
+[merge]
+    tool = diffmerge
+[diff]
+    tool = diffmerge
+[mergetool]
+    keepBackup = false
+[mergetool "diffmerge"]
+    cmd = git-mergetool-diffmerge-wrapper.sh "$LOCAL" "$BASE" "$REMOTE" "$MERGED"
+[difftool "diffmerge"]
+    cmd = git-difftool-diffmerge-wrapper.sh "$LOCAL" "$REMOTE"
+[difftool "sourcetree"]
+	cmd = 'C:/Program Files/SourceGear/Common/DiffMerge/sgdm.exe' \"$LOCAL\" \"$REMOTE\"
+[mergetool "sourcetree"]
+	cmd = 'C:/Program Files/SourceGear/Common/DiffMerge/sgdm.exe' -merge -result=\"$MERGED\" \"$LOCAL\" \"$BASE\" \"$REMOTE\"
+	trustExitCode = true

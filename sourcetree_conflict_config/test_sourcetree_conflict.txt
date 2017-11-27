@@ -3,5 +3,7 @@ I am test source tree conflict
 just for a test 
 
 
-yes this is a test just only test .
+yes this is a test just only test, master branch changed this line.
 
+
+I am add by master branch.
